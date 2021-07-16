@@ -2,6 +2,7 @@ package com.hi.dhl.binding.viewbind
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.doOnDetach
 import androidx.viewbinding.ViewBinding
 import com.hi.dhl.binding.inflateMethod
 import com.hi.dhl.binding.inflateMethodWithViewGroup
@@ -32,6 +33,7 @@ class ViewGroupViewBinding<T : ViewBinding>(
         } else {
             layoutInflater = classes.inflateMethod()
         }
+
     }
 
     override fun getValue(thisRef: ViewGroup, property: KProperty<*>): T {
@@ -39,7 +41,6 @@ class ViewGroupViewBinding<T : ViewBinding>(
             this
 
         } ?: let {
-
             val bind: T
             if (viewGroup != null) {
                 bind = layoutInflater.invoke(null, inflater, viewGroup) as T
@@ -52,6 +53,9 @@ class ViewGroupViewBinding<T : ViewBinding>(
                     thisRef.addView(bind.root)
                 }
                 viewBinding = this
+                thisRef.doOnDetach {
+                    destroyed()
+                }
             }
         }
     }
